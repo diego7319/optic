@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Oct 24 15:19:53 2020
+
+@author: diego
+"""
+
 # -*- coding: utf-8 -*-
 import matplotlib.pyplot  as plt
 import numpy as np
@@ -74,12 +82,16 @@ def plot_hist(list_data, title):
 def plot_hist2(x,y, title):
     plt.figure()
     fig, ax = plt.subplots()
-    ax.plot(x,y)
+    ysum = sum(y)
+    y_percentage = []
+    [y_percentage.append(i/ysum) for i in y]
+    ax.bar(x,y_percentage)
+    print(sum(y_percentage))
     ax.set(xlabel='', ylabel='Number of events', title=title)
     ax.grid()
     plt.draw()
     fig.savefig(title+'.png')
-    return counts, bins, bars
+
 from matplotlib.ticker import PercentFormatter
 
 def plot_hist_percentage(list_data, title):
@@ -108,9 +120,8 @@ def get_average_stdev(static, spinning):
     print(y)
     print(f"SNR of standing source = {snr_static} , SNR of spinning source = {snr_spinning}")
 
-def divide_by_timebin(dataset,interval=900000):
+def divide_by_timebin(dataset,interval=800000):
     maxtag = max(dataset)
-    mintag = max(dataset)
     left,right = 0, interval
     ranges = []
     data_ranged = []
@@ -146,20 +157,17 @@ def mean_list(list_intervals):
     return sum(list_intervals)/len(list_intervals)
 
 def poisson_distribution(n, t):
-    print(math.e**(-1*n))
-    x =((n**t)*(math.e**(-1*n)))/math.factorial(t)
+    print(math.e**(-n))
+    x =((n**t)*(math.e**(-n)))/math.factorial(t)
     print(x)
     return x
 from collections import Counter
 
 def counter_ilist(list_count):
-    x = dict(Counter(list_count))
-    print(x)
-    print(type(x))
-    print(x.keys())
+    dict_from_list = dict(Counter(list_count))
     y,x = [],[]
-    for i in x:
-        y.append(x[i])
+    for i in dict_from_list:
+        y.append(dict_from_list[i])
         x.append(i)
     return y,x
         
@@ -190,11 +198,11 @@ if __name__ == "__main__":
     mean_spinning = mean_list(data_hist_spinning) 
     plot_hist_percentage(data_hist_static, 'static wheel histogram percentage')
     plot_hist_percentage(data_hist_spinning, 'spinning wheel histogram percentage')
-    pp = poisson_distribution(mean_static, 40)
+    pp = poisson_distribution(mean_static, 20)
     print(f'poisson {pp*100}%')
     bb = bose_ein_distribution(mean_spinning,20)
     print(f'bose {bb*100}%')
     x,y =counter_ilist(data_hist_static)
-    plot_hist2(x,y,'type')
-    
-    
+    plot_hist2(y,x,'static')
+    x,y =counter_ilist(data_hist_spinning)
+    plot_hist2(y,x,'spinning')
